@@ -1,6 +1,8 @@
 plugins {
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
+
+    kotlin("jvm") version "1.9.23"
 }
 
 
@@ -11,10 +13,9 @@ repositories {
 
 
 dependencies {
-    // Use JUnit test framework for unit tests
     implementation(project(":java"))
-//    implementation("org.processing:java")
-//    implementation("JsonKay:JsonKay")
+    implementation(project(":app"))
+
     testImplementation("junit:junit:4.13")
 }
 

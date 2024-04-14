@@ -1,21 +1,16 @@
 plugins {
-    kotlin("jvm") version "1.9.23"
+    id("org.processing.gradle")
+    id("application")
 }
 
 group = "org.processing"
 version = "1.0-SNAPSHOT"
 
+application{
+    mainClass = "Brightness"
+}
+
+
 repositories {
     mavenCentral()
-}
-
-dependencies {
-    testImplementation(kotlin("test"))
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-kotlin {
-    jvmToolchain(21)
 }
