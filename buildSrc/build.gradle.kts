@@ -7,6 +7,7 @@ plugins {
 
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url = uri("https://jogamp.org/deployment/maven") }
 }

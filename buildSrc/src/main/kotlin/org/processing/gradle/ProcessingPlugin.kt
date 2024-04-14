@@ -49,9 +49,7 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
     override fun apply(project: Project) {
         project.extensions.create("pde", ProcessingExtension::class.java)
         project.plugins.apply(JavaLibraryPlugin::class.java)
-        project.dependencies.add("implementation", "com.github.micycle1:processing-core-4:4.3")
-
-        project.repositories.add(project.repositories.maven { it.setUrl("https://jitpack.io") })
+        project.dependencies.add("implementation", "org.processing:core:4.4:all")
         project.repositories.add(project.repositories.maven { it.setUrl("https://jogamp.org/deployment/maven") })
 
 
