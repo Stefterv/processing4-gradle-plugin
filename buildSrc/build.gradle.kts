@@ -1,6 +1,6 @@
 plugins {
-    // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
-    `java-gradle-plugin`
+    id("java-gradle-plugin")
+    id("com.gradle.plugin-publish") version "1.2.1"
 
     kotlin("jvm") version "1.9.23"
 }
@@ -12,12 +12,14 @@ repositories {
     maven { url = uri("https://jogamp.org/deployment/maven") }
 }
 
+group = "org.processing"
+version = "1.0"
 
 dependencies {
+
+    // The preprocessing needs to be its own separate project, clear of the java library
     implementation(project(":java"))
     implementation(project(":app"))
-
-    testImplementation("junit:junit:4.13")
 }
 
 buildscript {
@@ -28,14 +30,18 @@ buildscript {
         classpath("io.github.fvarrui:javapackager:1.7.5")
     }
 }
-apply(plugin = "io.github.fvarrui.javapackager.plugin")
 
 gradlePlugin {
     plugins {
-        create("gradle-processing") {
+        create("gradleProcessing") {
             id = "org.processing.gradle"
             implementationClass = "org.processing.gradle.ProcessingPlugin"
         }
     }
 }
 
+publishing {
+    repositories{
+        mavenLocal()
+    }
+}
