@@ -1,6 +1,6 @@
 plugins {
     id("java-gradle-plugin")
-    id("com.gradle.plugin-publish") version "1.2.1"
+//    id("com.gradle.plugin-publish") version "1.2.1"
 
     kotlin("jvm") version "1.9.23"
 }
@@ -13,13 +13,10 @@ repositories {
 }
 
 group = "org.processing"
-version = "1.0"
+version = "4.3.1"
 
 dependencies {
-
-    // The preprocessing needs to be its own separate project, clear of the java library
-    implementation(project(":java"))
-    implementation(project(":app"))
+    implementation("org.processing:preprocessor:${version}")
 }
 
 buildscript {
@@ -37,11 +34,5 @@ gradlePlugin {
             id = "org.processing.gradle"
             implementationClass = "org.processing.gradle.ProcessingPlugin"
         }
-    }
-}
-
-publishing {
-    repositories{
-        mavenLocal()
     }
 }

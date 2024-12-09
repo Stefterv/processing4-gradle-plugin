@@ -1,3 +1,5 @@
+package processing.core
+
 import processing.core.PApplet
 
 class ProcessingTest : PApplet() {
@@ -19,5 +21,11 @@ fun main() {
 }
 
 fun settings(action: ProcessingTest.() -> Unit){
+
+}
+fun setup(action: ProcessingTest.() -> Unit){
+
+}
+fun draw(action: ProcessingTest.() -> Unit){
 
 }

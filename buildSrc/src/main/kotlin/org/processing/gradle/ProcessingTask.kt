@@ -8,7 +8,6 @@ import org.gradle.process.internal.worker.WorkerProcessFactory
 import org.gradle.work.ChangeType
 import org.gradle.work.FileChange
 import org.gradle.work.InputChanges
-import processing.app.Preferences
 import processing.mode.java.preproc.PdePreprocessor
 import java.io.File
 import java.io.IOException

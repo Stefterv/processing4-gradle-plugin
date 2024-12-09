@@ -49,8 +49,9 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
     override fun apply(project: Project) {
         project.extensions.create("pde", ProcessingExtension::class.java)
         project.plugins.apply(JavaLibraryPlugin::class.java)
-        project.dependencies.add("implementation", "org.processing:core:4.4:all")
+        project.dependencies.add("implementation", "org.processing:core:4.3.1")
         project.repositories.add(project.repositories.maven { it.setUrl("https://jogamp.org/deployment/maven") })
+        project.repositories.add(project.repositories.mavenCentral())
 
 
         project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.all { sourceSet ->
@@ -70,7 +71,7 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
             val taskName = sourceSet.getTaskName("generate", "GrammarSource")
 
             // 3) Set up the Antlr output directory (adding to javac inputs!)
-            val outputDirectoryName = project.buildDir.toString() + "/generated-src/pde/" + sourceSet.getName()
+            val outputDirectoryName = project.layout.buildDirectory.toString() + "/generated-src/pde/" + sourceSet.getName()
             val outputDirectory = File(outputDirectoryName)
             sourceSet.getJava().srcDir(outputDirectory)
 
