@@ -87,7 +87,8 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
                 objectFactory.sourceDirectorySet("${sourceSet.name}.pde", "${sourceSet.name} Processing Source")
             ).apply {
                 filter.include("**/*.pde")
-                filter.exclude("build/**")
+                filter.exclude("${project.layout.buildDirectory.asFile.get().name}/**")
+
                 srcDir("./")
             }
             sourceSet.allSource.source(pdeSourceSet)
