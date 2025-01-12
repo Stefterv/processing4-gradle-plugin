@@ -4,7 +4,7 @@ plugins {
 
 
 application{
-    mainClass = "Brightness"
+    mainClass = "brightness"
 }
 
 dependencies{

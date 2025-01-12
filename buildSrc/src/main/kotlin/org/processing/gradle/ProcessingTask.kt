@@ -4,17 +4,16 @@ import org.gradle.api.file.*
 import org.gradle.api.tasks.*
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.internal.file.Deleter
-import org.gradle.process.internal.worker.WorkerProcessFactory
 import org.gradle.work.ChangeType
 import org.gradle.work.FileChange
 import org.gradle.work.InputChanges
 import processing.mode.java.preproc.PdePreprocessor
 import java.io.File
 import java.io.IOException
-import java.io.StringWriter
 import java.io.UncheckedIOException
 import java.util.concurrent.Callable
 import javax.inject.Inject
+
 abstract class ProcessingTask() : SourceTask() {
      @get:OutputDirectory
     var outputDirectory: File? = null
@@ -41,7 +40,7 @@ abstract class ProcessingTask() : SourceTask() {
             }
             if (rebuildRequired) {
                 try {
-                    deleter.ensureEmptyDirectory(outputDirectory)
+                    outputDirectory?.let { deleter.ensureEmptyDirectory(it) }
                 } catch (ex: IOException) {
                     throw UncheckedIOException(ex)
                 }
@@ -52,13 +51,15 @@ abstract class ProcessingTask() : SourceTask() {
         }
 
         for (file in files) {
-            val name = file.nameWithoutExtension.capitalized()
-            val preprocessor = PdePreprocessor.builderFor(name).build();
-            val code = file.readText()
-
-            File(outputDirectory, "$name.java").bufferedWriter().use { out ->
-                preprocessor.write(out, code)
-            }
+            val name = file.nameWithoutExtension
+            File(outputDirectory, "$name.java")
+                .bufferedWriter()
+                .use { out ->
+                    PdePreprocessor
+                        .builderFor(name)
+                        .build()
+                        .write(out, file.readText())
+                }
         }
     }
 

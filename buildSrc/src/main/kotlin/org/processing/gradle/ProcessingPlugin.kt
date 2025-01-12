@@ -4,11 +4,9 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.file.DefaultSourceDirectorySet
-import org.gradle.api.internal.tasks.DefaultSourceSet
 import org.gradle.api.internal.tasks.TaskDependencyFactory
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.ApplicationPlugin
-import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import javax.inject.Inject
@@ -25,23 +23,19 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
 
         project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.all { sourceSet ->
             val pdeSourceSet = objectFactory.newInstance(
-                DefaultPDESourceDirectorySet::class.java, objectFactory.sourceDirectorySet("${sourceSet.name}.pde", "${sourceSet.name} Processing Source")
+                DefaultPDESourceDirectorySet::class.java,
+                objectFactory.sourceDirectorySet("${sourceSet.name}.pde", "${sourceSet.name} Processing Source")
             ).apply {
                 filter.include("**/*.pde")
+                srcDir("src/${sourceSet.name}/pde")
             }
-
-            val srcDir = "src/${sourceSet.name}/pde"
-            pdeSourceSet.srcDir(srcDir)
             sourceSet.allSource.source(pdeSourceSet)
 
-            val taskName = sourceSet.getTaskName("preprocess", "PDE")
-            val outputDirectory = project.layout.buildDirectory.file( "generated-src/pde/" + sourceSet.name).get().asFile
+            val outputDirectory = project.layout.buildDirectory.file( "generated/pde/" + sourceSet.name).get().asFile
             sourceSet.java.srcDir(outputDirectory)
 
-            project.tasks.register(
-                taskName,
-                ProcessingTask::class.java
-            ) { task ->
+            val taskName = sourceSet.getTaskName("preprocess", "PDE")
+            project.tasks.register(taskName, ProcessingTask::class.java) { task ->
                 task.description = "Processes the ${sourceSet.name} PDE"
                 task.source = pdeSourceSet
                 task.outputDirectory = outputDirectory
