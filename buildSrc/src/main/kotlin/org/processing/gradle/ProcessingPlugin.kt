@@ -6,18 +6,18 @@ import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.file.DefaultSourceDirectorySet
 import org.gradle.api.internal.tasks.TaskDependencyFactory
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.plugins.ApplicationPlugin
-import org.gradle.api.plugins.ApplicationPluginConvention
-import org.gradle.api.plugins.JavaApplication
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.tasks.JavaExec
+import org.jetbrains.compose.ComposeExtension
+import org.jetbrains.compose.desktop.DesktopExtension
 import javax.inject.Inject
 
 class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFactory) : Plugin<Project> {
     override fun apply(project: Project) {
         project.plugins.apply(JavaPlugin::class.java)
-        project.plugins.apply(ApplicationPlugin::class.java)
+
+        project.plugins.apply("org.jetbrains.compose")
+        project.plugins.apply("org.jetbrains.kotlin.jvm")
 
         project.dependencies.add("implementation", "org.processing:core:4.3.1")
         project.dependencies.add("implementation", project.fileTree("src").apply { include("**/code/*.jar") })
@@ -25,16 +25,14 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
         project.repositories.add(project.repositories.maven { it.setUrl("https://jogamp.org/deployment/maven") })
         project.repositories.add(project.repositories.mavenCentral())
 
-        val name = "brightness"
-
-        project.extensions.configure(JavaApplication::class.java) { convention ->
-            convention.mainClass.set(name)
-        }
-        project.tasks.named("run", JavaExec::class.java).apply {
-            configure { task ->
-                task.workingDir = project.file("src/main/pde/$name")
+        //TODO: Find the name automatically
+        project.extensions.configure(ComposeExtension::class.java) { extension ->
+            extension.extensions.getByType(DesktopExtension::class.java).application { application ->
+                application.mainClass = "brightness"
+                application.nativeDistributions.modules("java.management")
             }
         }
+
         project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.all { sourceSet ->
             val pdeSourceSet = objectFactory.newInstance(
                 DefaultPDESourceDirectorySet::class.java,
@@ -47,6 +45,8 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
 
             val outputDirectory = project.layout.buildDirectory.file( "generated/pde/" + sourceSet.name).get().asFile
             sourceSet.java.srcDir(outputDirectory)
+
+            // TODO: Support imported libraries
 
             val taskName = sourceSet.getTaskName("preprocess", "PDE")
             project.tasks.register(taskName, ProcessingTask::class.java) { task ->

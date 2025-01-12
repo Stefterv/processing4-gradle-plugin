@@ -20,8 +20,8 @@ void setup() {
   Gson gson = new Gson();
   println(Gson.class);
 
-  String[] file = loadStrings("input.txt");
-  println(file);
+  //String[] file = loadStrings("input.txt");
+  //println(file);
 }
 
 void draw() {

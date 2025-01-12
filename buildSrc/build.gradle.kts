@@ -17,6 +17,8 @@ version = "4.3.1"
 
 dependencies {
     implementation("org.processing:preprocessor:${version}")
+    implementation("org.jetbrains.compose:compose-gradle-plugin:1.7.3")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.21")
 }
 
 gradlePlugin {
