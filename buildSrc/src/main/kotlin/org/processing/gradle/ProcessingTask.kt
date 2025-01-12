@@ -28,7 +28,7 @@ abstract class ProcessingTask() : SourceTask() {
     fun execute(inputChanges: InputChanges) {
         val files: MutableSet<File> = HashSet()
         if (inputChanges.isIncremental) {
-            var rebuildRequired = false
+            var rebuildRequired = true
             for (fileChange: FileChange in inputChanges.getFileChanges(stableSources)) {
                 if (fileChange.fileType == FileType.FILE) {
                     if (fileChange.changeType == ChangeType.REMOVED) {
@@ -50,17 +50,17 @@ abstract class ProcessingTask() : SourceTask() {
             files.addAll(stableSources.files)
         }
 
-        for (file in files) {
-            val name = file.nameWithoutExtension
-            File(outputDirectory, "$name.java")
-                .bufferedWriter()
-                .use { out ->
-                    PdePreprocessor
-                        .builderFor(name)
-                        .build()
-                        .write(out, file.readText())
-                }
-        }
+
+        val name = project.layout.projectDirectory.asFile.name.replace(Regex("[^a-zA-Z0-9_]"), "_")
+        val combined = files.joinToString("\n") { it.readText() }
+        File(outputDirectory, "$name.java")
+            .bufferedWriter()
+            .use { out ->
+                PdePreprocessor
+                    .builderFor(name)
+                    .build()
+                    .write(out, combined)
+            }
     }
 
     @get:Inject

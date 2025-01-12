@@ -25,12 +25,15 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
         project.repositories.add(project.repositories.maven { it.setUrl("https://jogamp.org/deployment/maven") })
         project.repositories.add(project.repositories.mavenCentral())
 
-        //TODO: Find the name automatically, could be based on the source folder
         project.extensions.configure(ComposeExtension::class.java) { extension ->
             extension.extensions.getByType(DesktopExtension::class.java).application { application ->
-                application.mainClass = "brightness"
+                application.mainClass = project.layout.projectDirectory.asFile.name.replace(Regex("[^a-zA-Z0-9_]"), "_")
                 application.nativeDistributions.modules("java.management")
             }
+        }
+
+        project.tasks.named("wrapper").configure {
+            it.enabled = false
         }
 
         project.tasks.create("sketch").apply {
@@ -57,7 +60,8 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
                 objectFactory.sourceDirectorySet("${sourceSet.name}.pde", "${sourceSet.name} Processing Source")
             ).apply {
                 filter.include("**/*.pde")
-                srcDir("src/${sourceSet.name}/pde")
+                filter.exclude("build/**")
+                srcDir("./")
             }
             sourceSet.allSource.source(pdeSourceSet)
 
