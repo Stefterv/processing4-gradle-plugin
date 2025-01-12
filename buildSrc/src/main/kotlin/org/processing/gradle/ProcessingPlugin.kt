@@ -7,8 +7,11 @@ import org.gradle.api.internal.file.DefaultSourceDirectorySet
 import org.gradle.api.internal.tasks.TaskDependencyFactory
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.ApplicationPlugin
+import org.gradle.api.plugins.ApplicationPluginConvention
+import org.gradle.api.plugins.JavaApplication
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.JavaExec
 import javax.inject.Inject
 
 class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFactory) : Plugin<Project> {
@@ -21,6 +24,16 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
         project.repositories.add(project.repositories.maven { it.setUrl("https://jogamp.org/deployment/maven") })
         project.repositories.add(project.repositories.mavenCentral())
 
+        val name = "brightness"
+
+        project.extensions.configure(JavaApplication::class.java) { convention ->
+            convention.mainClass.set(name)
+        }
+        project.tasks.named("run", JavaExec::class.java).apply {
+            configure { task ->
+                task.workingDir = project.file("src/main/pde/$name")
+            }
+        }
         project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.all { sourceSet ->
             val pdeSourceSet = objectFactory.newInstance(
                 DefaultPDESourceDirectorySet::class.java,
