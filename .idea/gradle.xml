@@ -7,7 +7,7 @@
         <compositeConfiguration>
           <compositeBuild compositeDefinitionSource="SCRIPT">
             <builds>
-              <build path="$PROJECT_DIR$/buildSrc" name="processing-gradle-runner">
+              <build path="$PROJECT_DIR$/buildSrc" name="processing-gradle-plugin">
                 <projects>
                   <project path="$PROJECT_DIR$/buildSrc" />
                 </projects>
