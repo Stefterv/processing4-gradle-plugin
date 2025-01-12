@@ -33,7 +33,26 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
             }
         }
 
+        project.tasks.create("sketch").apply {
+            group = "processing"
+            description = "Runs the Processing sketch"
+            dependsOn("run")
+        }
+        project.tasks.create("present").apply {
+            // TODO: Implement dynamic fullscreen by setting the properties
+            group = "processing"
+            description = "Presents the Processing sketch"
+            dependsOn("run")
+        }
+        project.tasks.create("export").apply {
+            group = "processing"
+            description = "Creates a distributable version of the Processing sketch"
+            dependsOn("createDistributable")
+        }
+
         project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.all { sourceSet ->
+
+            // TODO Look for .pde files in the source directory instead
             val pdeSourceSet = objectFactory.newInstance(
                 DefaultPDESourceDirectorySet::class.java,
                 objectFactory.sourceDirectorySet("${sourceSet.name}.pde", "${sourceSet.name} Processing Source")
@@ -47,6 +66,8 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
             sourceSet.java.srcDir(outputDirectory)
 
             // TODO: Support imported libraries
+            // TODO: Merge all pde files into one
+            // TODO: Support multiple sketches?
 
             val taskName = sourceSet.getTaskName("preprocess", "PDE")
             project.tasks.register(taskName, ProcessingTask::class.java) { task ->
