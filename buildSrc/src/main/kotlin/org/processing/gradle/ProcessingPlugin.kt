@@ -22,6 +22,30 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
         project.dependencies.add("implementation", "org.processing:core:4.3.1")
         project.dependencies.add("implementation", project.fileTree("src").apply { include("**/code/*.jar") })
 
+        // Base JOGL and Gluegen dependencies
+        project.dependencies.add("runtimeOnly", "org.jogamp.jogl:jogl-all-main:2.5.0")
+        project.dependencies.add("runtimeOnly", "org.jogamp.gluegen:gluegen-rt-main:2.5.0")
+
+        // TODO: Only add the native dependencies for the platform the user is building for
+
+        // MacOS specific native dependencies
+        project.dependencies.add("runtimeOnly", "org.jogamp.jogl:jogl-all:2.5.0:natives-macosx-universal")
+        project.dependencies.add("runtimeOnly", "org.jogamp.gluegen:gluegen-rt:2.5.0:natives-macosx-universal")
+
+        // Windows specific native dependencies
+        project.dependencies.add("runtimeOnly", "org.jogamp.jogl:jogl-all:2.5.0:natives-windows-amd64")
+        project.dependencies.add("runtimeOnly", "org.jogamp.gluegen:gluegen-rt:2.5.0:natives-windows-amd64")
+
+        // Linux specific native dependencies
+        project.dependencies.add("runtimeOnly", "org.jogamp.jogl:jogl-all:2.5.0:natives-linux-amd64")
+        project.dependencies.add("runtimeOnly", "org.jogamp.gluegen:gluegen-rt:2.5.0:natives-linux-amd64")
+
+        // NativeWindow dependencies for all platforms
+        project.dependencies.add("implementation", "org.jogamp.jogl:nativewindow:2.5.0")
+        project.dependencies.add("runtimeOnly", "org.jogamp.jogl:nativewindow:2.5.0:natives-macosx-universal")
+        project.dependencies.add("runtimeOnly", "org.jogamp.jogl:nativewindow:2.5.0:natives-windows-amd64")
+        project.dependencies.add("runtimeOnly", "org.jogamp.jogl:nativewindow:2.5.0:natives-linux-amd64")
+
         project.repositories.add(project.repositories.maven { it.setUrl("https://jogamp.org/deployment/maven") })
         project.repositories.add(project.repositories.mavenCentral())
 
