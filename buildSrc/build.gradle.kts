@@ -23,6 +23,7 @@ dependencies {
 
 gradlePlugin {
     // TODO: Publishing https://docs.gradle.org/current/userguide/publishing_gradle_plugins.html
+    // TODO: Publishing CI/CD
     plugins {
         create("gradleProcessing") {
             id = "org.processing"
