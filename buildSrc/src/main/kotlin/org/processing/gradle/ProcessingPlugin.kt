@@ -20,6 +20,7 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
         project.plugins.apply(ApplicationPlugin::class.java)
 
         project.dependencies.add("implementation", "org.processing:core:4.3.1")
+        project.dependencies.add("implementation", project.fileTree("src").apply { include("**/code/*.jar") })
 
         project.repositories.add(project.repositories.maven { it.setUrl("https://jogamp.org/deployment/maven") })
         project.repositories.add(project.repositories.mavenCentral())
