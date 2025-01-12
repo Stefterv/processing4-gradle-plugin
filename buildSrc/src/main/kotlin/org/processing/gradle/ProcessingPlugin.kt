@@ -16,6 +16,9 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
     override fun apply(project: Project) {
         project.plugins.apply(JavaPlugin::class.java)
 
+        // TODO: Only set the build directory when run from the Processing plugin
+        project.layout.buildDirectory.set(project.layout.projectDirectory.dir(".processing"))
+
         project.plugins.apply("org.jetbrains.compose")
         project.plugins.apply("org.jetbrains.kotlin.jvm")
 
