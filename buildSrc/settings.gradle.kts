@@ -1,1 +1,1 @@
-rootProject.name = "processing-gradle-plugin"
+rootProject.name = "gradle"
