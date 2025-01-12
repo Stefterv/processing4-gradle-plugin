@@ -22,6 +22,7 @@ dependencies {
 }
 
 gradlePlugin {
+    // TODO: Publishing https://docs.gradle.org/current/userguide/publishing_gradle_plugins.html
     plugins {
         create("gradleProcessing") {
             id = "org.processing"
