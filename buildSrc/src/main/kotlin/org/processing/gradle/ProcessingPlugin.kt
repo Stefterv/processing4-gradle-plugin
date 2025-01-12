@@ -25,7 +25,7 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
         project.repositories.add(project.repositories.maven { it.setUrl("https://jogamp.org/deployment/maven") })
         project.repositories.add(project.repositories.mavenCentral())
 
-        //TODO: Find the name automatically
+        //TODO: Find the name automatically, could be based on the source folder
         project.extensions.configure(ComposeExtension::class.java) { extension ->
             extension.extensions.getByType(DesktopExtension::class.java).application { application ->
                 application.mainClass = "brightness"
@@ -51,8 +51,7 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
         }
 
         project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.all { sourceSet ->
-
-            // TODO Look for .pde files in the source directory instead
+            // TODO Look for .pde files in the source directory instead, whilst also supporting normal gradle setup
             val pdeSourceSet = objectFactory.newInstance(
                 DefaultPDESourceDirectorySet::class.java,
                 objectFactory.sourceDirectorySet("${sourceSet.name}.pde", "${sourceSet.name} Processing Source")
