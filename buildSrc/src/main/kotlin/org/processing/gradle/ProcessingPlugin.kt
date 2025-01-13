@@ -100,8 +100,8 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
             val outputDirectory = project.layout.buildDirectory.file( "generated/pde/" + sourceSet.name).get().asFile
             sourceSet.java.srcDir(outputDirectory)
 
-            // TODO: Support imported libraries
             // TODO: Support multiple sketches?
+            // TODO: Preprocess PDE files in this step so we can add the library dependencies
 
             val taskName = sourceSet.getTaskName("preprocess", "PDE")
             project.tasks.register(taskName, ProcessingTask::class.java) { task ->
