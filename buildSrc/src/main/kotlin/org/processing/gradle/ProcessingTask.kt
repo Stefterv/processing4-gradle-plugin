@@ -11,6 +11,7 @@ import processing.mode.java.preproc.PdePreprocessor
 import java.io.File
 import java.io.IOException
 import java.io.UncheckedIOException
+import java.util.Properties
 import java.util.concurrent.Callable
 import javax.inject.Inject
 
@@ -49,7 +50,6 @@ abstract class ProcessingTask() : SourceTask() {
         } else {
             files.addAll(stableSources.files)
         }
-
 
         val name = project.layout.projectDirectory.asFile.name.replace(Regex("[^a-zA-Z0-9_]"), "_")
         val combined = files.joinToString("\n") { it.readText() }

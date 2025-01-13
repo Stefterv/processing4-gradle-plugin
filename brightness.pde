@@ -10,6 +10,10 @@ import com.google.gson.*;
 int barWidth = 20;
 int lastBar = -1;
 
+import controlP5.*;
+
+ControlP5 cp5;
+
 
 void setup() {
   size(640, 360);

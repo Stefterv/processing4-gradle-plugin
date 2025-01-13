@@ -8,8 +8,11 @@ import org.gradle.api.internal.tasks.TaskDependencyFactory
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.compile.JavaCompile
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.desktop.DesktopExtension
+import java.io.File
+import java.util.*
 import javax.inject.Inject
 
 class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFactory) : Plugin<Project> {
@@ -59,6 +62,7 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
             }
         }
 
+        // TODO: Also only do within Processing
         project.tasks.named("wrapper").configure {
             it.enabled = false
         }
@@ -69,7 +73,7 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
             dependsOn("run")
         }
         project.tasks.create("present").apply {
-            // TODO: Implement dynamic fullscreen by setting the properties
+            // TODO: Implement dynamic fullscreen by setting the properties and recompiling the sketch every run
             group = "processing"
             description = "Presents the Processing sketch"
             dependsOn("run")
@@ -81,7 +85,7 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
         }
 
         project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.all { sourceSet ->
-            // TODO Look for .pde files in the source directory instead, whilst also supporting normal gradle setup
+            // TODO: also supporting normal gradle setup
             val pdeSourceSet = objectFactory.newInstance(
                 DefaultPDESourceDirectorySet::class.java,
                 objectFactory.sourceDirectorySet("${sourceSet.name}.pde", "${sourceSet.name} Processing Source")
@@ -97,7 +101,6 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
             sourceSet.java.srcDir(outputDirectory)
 
             // TODO: Support imported libraries
-            // TODO: Merge all pde files into one
             // TODO: Support multiple sketches?
 
             val taskName = sourceSet.getTaskName("preprocess", "PDE")
@@ -110,6 +113,27 @@ class ProcessingPlugin @Inject constructor(private val objectFactory: ObjectFact
             project.tasks.named(
                 sourceSet.compileJavaTaskName
             ) { task -> task.dependsOn(taskName) }
+        }
+
+        var settingsFolder = File(System.getProperty("user.home"),".processing")
+        val osName = System.getProperty("os.name").lowercase()
+        if (osName.contains("win")) {
+            settingsFolder = File(System.getenv("APPDATA"), "Processing")
+        } else if (osName.contains("mac")) {
+            settingsFolder = File(System.getProperty("user.home"), "Library/Processing")
+        }else if (osName.contains("nix") || osName.contains("nux")) {
+            settingsFolder = File(System.getProperty("user.home"), ".processing")
+        }
+
+        val preferences = File(settingsFolder, "preferences.txt")
+        val prefs = Properties()
+        prefs.load(preferences.inputStream())
+
+        val sketchbook = prefs.getProperty("sketchbook.path.four")
+
+        File(sketchbook, "libraries").listFiles { file -> file.isDirectory
+        }?.forEach{
+            project.dependencies.add("implementation", project.fileTree(it).apply { include("**/*.jar") })
         }
     }
     abstract class DefaultPDESourceDirectorySet @Inject constructor(
